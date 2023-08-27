@@ -5,9 +5,16 @@ const App: React.FC = () => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [hexData, setHexData] = useState<string[] | null>(null);
 
+  const scrollCount = 10;
   const rowCount = 40;
-  const colCount = 40;
-  const scrollCount = 5;
+  const colCount = 30;
+  const maxHeight = "800px";
+
+  const lightText = "#eaeaea";
+  const bc = "#cecece";
+
+  const totalRows = hexData ? Math.ceil(hexData.length / colCount) : 0;
+  console.log("totalRows", totalRows);
 
   const [offset, setOffset] = useState(0);
 
@@ -56,38 +63,65 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <input type="file" onChange={handleImageChange} />
-      {imageSrc && (
-        <img
-          src={imageSrc}
-          alt="Uploaded preview"
-          style={{ maxWidth: "300px", marginTop: "20px" }}
-        />
-      )}
-      {hexData && (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: `repeat(${colCount}, 24px)`,
-            marginTop: "20px",
-          }}
-        >
-          {hexData
-            .slice(
-              offset * scrollCount * colCount,
-              offset * scrollCount * colCount + rowCount * colCount
-            )
-            .map((hex, idx) => (
+      <div
+        style={{
+          display: "flex",
+          maxHeight: "fit-content",
+        }}
+      >
+        {hexData && (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: `repeat(${colCount}, 24px) 24px`,
+            }}
+          >
+            {hexData
+              .slice(
+                offset * scrollCount * colCount,
+                offset * scrollCount * colCount + rowCount * colCount
+              )
+              .map((hex, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    color: hex === "00" ? lightText : "#000",
+                    borderRight: "1px solid" + bc,
+                    borderBottom: "1px solid" + bc,
+                    borderTop: idx < colCount ? "1px solid" + bc : "none",
+                    borderLeft:
+                      idx % colCount === 0 ? "1px solid" + bc : "none",
+                    gridColumnStart: (idx % colCount) + 1,
+                  }}
+                >
+                  {hex}
+                </div>
+              ))}
+            {Array.from({ length: rowCount }).map((_, rowIndex) => (
               <div
-                key={idx}
+                key={`line-${rowIndex}`}
                 style={{
-                  color: hex === "00" ? `#00000050` : "#000",
+                  color: "#000",
+                  gridColumnStart: colCount + 1,
+                  gridRowStart: rowIndex + 1,
+                  paddingLeft: "5px",
                 }}
               >
-                {hex}
+                {offset * scrollCount + rowIndex + 1}
               </div>
             ))}
-        </div>
-      )}
+          </div>
+        )}
+        {imageSrc && (
+          <img
+            src={imageSrc}
+            alt="Uploaded preview"
+            style={{
+              maxHeight,
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 };
