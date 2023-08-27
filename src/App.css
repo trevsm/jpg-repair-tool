@@ -9,3 +9,13 @@ body {
   font-family: monospace;
   font-size: 16px;
 }
+
+.sticky {
+  position: sticky;
+  background-color: white; /* Background color ensures the data below doesn't show through */
+  z-index: 2;
+}
+
+.sticky-top {
+  top: 0;
+}

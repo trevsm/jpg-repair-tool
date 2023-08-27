@@ -7,14 +7,11 @@ const App: React.FC = () => {
 
   const scrollCount = 10;
   const rowCount = 40;
-  const colCount = 30;
+  const colCount = 16;
   const maxHeight = "800px";
 
   const lightText = "#eaeaea";
   const bc = "#cecece";
-
-  const totalRows = hexData ? Math.ceil(hexData.length / colCount) : 0;
-  console.log("totalRows", totalRows);
 
   const [offset, setOffset] = useState(0);
 
@@ -67,15 +64,60 @@ const App: React.FC = () => {
         style={{
           display: "flex",
           maxHeight: "fit-content",
+          padding: "10px",
+          gap: "10px",
         }}
       >
         {hexData && (
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: `repeat(${colCount}, 24px) 24px`,
+              gridTemplateColumns: `80px repeat(${colCount}, 24px)`,
             }}
           >
+            <div
+              className="sticky sticky-top"
+              style={{
+                border: `1px solid ${bc}`,
+                textAlign: "center",
+              }}
+            >
+              Address
+            </div>
+            {Array.from({ length: colCount }).map((_, colIndex) => (
+              <div
+                key={`header-${colIndex}`}
+                className="sticky sticky-top"
+                style={{
+                  borderTop: `1px solid ${bc}`,
+                  borderRight: `1px solid ${bc}`,
+                  borderBottom: `1px solid ${bc}`,
+                  textAlign: "center",
+                }}
+              >
+                {colIndex.toString(16).padStart(2, "0").toUpperCase()}
+              </div>
+            ))}
+
+            {Array.from({ length: rowCount }).map((_, rowIndex) => (
+              <div
+                key={`line-${rowIndex}`}
+                style={{
+                  color: "#000",
+                  gridColumnStart: 1,
+                  gridRowStart: rowIndex + 2,
+                  paddingLeft: "5px",
+                  borderRight: "1px solid" + bc,
+                  borderBottom: "1px solid" + bc,
+                  borderLeft: `1px solid ${bc}`,
+                }}
+              >
+                {(offset * scrollCount + rowIndex)
+                  .toString(16)
+                  .padStart(6, "0")
+                  .toUpperCase()}
+              </div>
+            ))}
             {hexData
               .slice(
                 offset * scrollCount * colCount,
@@ -88,28 +130,12 @@ const App: React.FC = () => {
                     color: hex === "00" ? lightText : "#000",
                     borderRight: "1px solid" + bc,
                     borderBottom: "1px solid" + bc,
-                    borderTop: idx < colCount ? "1px solid" + bc : "none",
-                    borderLeft:
-                      idx % colCount === 0 ? "1px solid" + bc : "none",
-                    gridColumnStart: (idx % colCount) + 1,
+                    gridColumnStart: (idx % colCount) + 2, // +1 to adjust for address column
                   }}
                 >
                   {hex}
                 </div>
               ))}
-            {Array.from({ length: rowCount }).map((_, rowIndex) => (
-              <div
-                key={`line-${rowIndex}`}
-                style={{
-                  color: "#000",
-                  gridColumnStart: colCount + 1,
-                  gridRowStart: rowIndex + 1,
-                  paddingLeft: "5px",
-                }}
-              >
-                {offset * scrollCount + rowIndex + 1}
-              </div>
-            ))}
           </div>
         )}
         {imageSrc && (
