@@ -58,24 +58,25 @@ export function HexGridView({ hexData, offset }: HexGridViewProps) {
       </div>
     ));
 
-  const hexValues = hexData
-    .slice(
-      offset * scrollCount * colCount,
-      offset * scrollCount * colCount + rowCount * colCount
-    )
-    .map((hex, idx) => (
-      <div
-        key={idx}
-        style={{
-          color: hex === "00" ? lightText : "#000",
-          borderRight: "1px solid" + bc,
-          borderBottom: "1px solid" + bc,
-          gridColumnStart: (idx % colCount) + 2, // +1 to adjust for address column
-        }}
-      >
-        {hex}
-      </div>
-    ));
+  const HexValues = () =>
+    hexData
+      .slice(
+        offset * scrollCount * colCount,
+        offset * scrollCount * colCount + rowCount * colCount
+      )
+      .map((hex, idx) => (
+        <div
+          key={idx}
+          style={{
+            color: hex === "00" ? lightText : "#000",
+            borderRight: "1px solid" + bc,
+            borderBottom: "1px solid" + bc,
+            gridColumnStart: (idx % colCount) + 2, // +1 to adjust for address column
+          }}
+        >
+          {hex}
+        </div>
+      ));
 
   return (
     <div
@@ -86,7 +87,7 @@ export function HexGridView({ hexData, offset }: HexGridViewProps) {
     >
       <StickyHeader />
       <AddressValues />
-      {hexValues}
+      <HexValues />
     </div>
   );
 }
