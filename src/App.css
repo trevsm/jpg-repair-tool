@@ -12,7 +12,7 @@ body {
 
 .sticky {
   position: sticky;
-  background-color: white; /* Background color ensures the data below doesn't show through */
+  background-color: white;
   z-index: 2;
 }
 
