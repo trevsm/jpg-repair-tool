@@ -12,11 +12,13 @@ export function HexGridView({ hexData, offset }: HexGridViewProps) {
   const StickyHeader = () => (
     <>
       <div className="sticky sticky-top">Offset</div>
+      <div className="sticky sticky-top"></div>
       {Array.from({ length: 16 }).map((_, colIndex) => (
         <div key={`header-${colIndex}`} className="sticky sticky-top">
           {colIndex.toString(16).padStart(2, "0").toUpperCase()}
         </div>
       ))}
+      <div className="sticky sticky-top"></div>
       <div className="sticky sticky-top">ASCII</div>
     </>
   );
@@ -42,7 +44,7 @@ export function HexGridView({ hexData, offset }: HexGridViewProps) {
         style={{
           color: hex === "00" ? lightText : "#000",
           backgroundColor: idx % 2 !== 0 ? "#fff" : lightBg,
-          gridColumnStart: (idx % 16) + 2,
+          gridColumnStart: (idx % 16) + 3,
         }}
       >
         {hex}
@@ -79,7 +81,7 @@ export function HexGridView({ hexData, offset }: HexGridViewProps) {
   const preComputedStyle = (rowIdx: number) =>
     ({
       color: "#000",
-      gridColumnStart: 18,
+      gridColumnStart: 20,
       gridRowStart: rowIdx + 2,
       whiteSpace: "pre",
     } as React.CSSProperties);
@@ -88,7 +90,7 @@ export function HexGridView({ hexData, offset }: HexGridViewProps) {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: `80px repeat(${16}, 24px) 150px`,
+        gridTemplateColumns: `80px 24px repeat(${16}, 24px) 24px 150px`,
       }}
     >
       <StickyHeader />

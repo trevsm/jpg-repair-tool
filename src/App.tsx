@@ -5,7 +5,7 @@ import { ImagePreview } from "./ImagePreview";
 
 import "./App.css";
 
-export const scrollCount = 1;
+export const scrollCount = 5;
 
 const App = () => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
