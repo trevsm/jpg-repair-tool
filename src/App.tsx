@@ -5,6 +5,8 @@ import { ImagePreview } from "./ImagePreview";
 
 import "./App.css";
 
+export const scrollCount = 1;
+
 const App = () => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [hexData, setHexData] = useState<string[] | null>(null);
@@ -20,6 +22,7 @@ const App = () => {
     const hexReader = new FileReader();
     hexReader.onloadend = (e) => {
       if (e.target?.result) {
+        setOffset(0);
         const buffer = e.target.result as ArrayBuffer;
         const hexArray = Array.from(new Uint8Array(buffer)).map((byte) =>
           byte.toString(16).padStart(2, "0")
@@ -30,13 +33,18 @@ const App = () => {
     hexReader.readAsArrayBuffer(file);
   };
 
+  const handlePixelClick = (hexPosition: number) => {
+    const row = Math.floor(hexPosition / 16) * 16;
+    setOffset(row + 403 * 16);
+  };
+
   useEffect(() => {
     const onScroll = (e: WheelEvent) => {
       if (e.deltaY > 0) {
-        setOffset((prevOffset) => prevOffset + 1);
+        setOffset((prevOffset) => prevOffset + 16 * scrollCount);
       } else {
         setOffset((prevOffset) =>
-          prevOffset === 0 ? prevOffset : prevOffset - 1
+          prevOffset <= 0 ? 0 : prevOffset - 16 * scrollCount
         );
       }
     };
@@ -56,7 +64,9 @@ const App = () => {
         }}
       >
         {hexData && <HexGridView hexData={hexData} offset={offset} />}
-        {imageSrc && <ImagePreview imageSrc={imageSrc} />}
+        {imageSrc && (
+          <ImagePreview imageSrc={imageSrc} onPixelClick={handlePixelClick} />
+        )}
       </div>
     </div>
   );
