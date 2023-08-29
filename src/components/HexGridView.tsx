@@ -1,4 +1,4 @@
-import { fastHexToInt } from "./tools/fastHexToInt";
+import { fastHexToInt } from "../tools/fastHexToInt";
 
 interface HexGridViewProps {
   hexData: string[];

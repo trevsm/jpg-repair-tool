@@ -1,4 +1,5 @@
 export function fastHexToInt(hex: string) {
+  if (!hex || hex.length === 0) return 0;
   let val = 0;
 
   for (let i = 0; i < hex.length; i++) {

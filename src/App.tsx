@@ -1,16 +1,28 @@
-import { useEffect, useState } from "react";
-import { HexGridView } from "./HexGridView";
-import { FileUploader } from "./FileUploader";
-import { ImagePreview } from "./ImagePreview";
-
+import { useEffect, useMemo, useState } from "react";
+import { HexGridView } from "./components/HexGridView";
+import { FileUploader } from "./components/FileUploader";
+import { ImagePreview } from "./components/ImagePreview";
+import { getIndex } from "./tools/getIndex";
+import { fileFormatCodes } from "./fileFormatCodes";
 import "./App.css";
 
-export const scrollCount = 5;
+export const scrollCount = 20;
 
 const App = () => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [hexData, setHexData] = useState<string[] | null>(null);
   const [offset, setOffset] = useState(0);
+
+  const fileOutline = useMemo(
+    () =>
+      fileFormatCodes
+        .find((fileFormat) => fileFormat.types.includes("jpg"))
+        ?.codes.map((code) => ({
+          title: code.title,
+          indexes: getIndex(hexData, code.match),
+        })),
+    [hexData]
+  );
 
   const handleFile = (file: File) => {
     const reader = new FileReader();
@@ -35,7 +47,7 @@ const App = () => {
 
   const handlePixelClick = (hexPosition: number) => {
     const row = Math.floor(hexPosition / 16) * 16;
-    setOffset(row + 403 * 16);
+    setOffset(row);
   };
 
   useEffect(() => {
@@ -65,7 +77,11 @@ const App = () => {
       >
         {hexData && <HexGridView hexData={hexData} offset={offset} />}
         {imageSrc && (
-          <ImagePreview imageSrc={imageSrc} onPixelClick={handlePixelClick} />
+          <ImagePreview
+            imageSrc={imageSrc}
+            onPixelClick={handlePixelClick}
+            hexDataMaxLength={hexData?.length || 0}
+          />
         )}
       </div>
     </div>

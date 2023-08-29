@@ -3,14 +3,22 @@ import { useEffect, useRef, useState } from "react";
 interface ImagePreviewProps {
   imageSrc: string;
   onPixelClick: (hexPosition: number) => void;
+  hexDataMaxLength: number;
 }
+
+const jpgHeader = 200 * 16;
 
 export const ImagePreview: React.FC<ImagePreviewProps> = ({
   imageSrc,
   onPixelClick,
+  hexDataMaxLength,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const canvasWidth = 1000;
+
+  const canvasHexMaxLength = 1000 * 748 * 3;
+  const ratio = (hexDataMaxLength - jpgHeader) / canvasHexMaxLength;
+
   const [mouseDown, setMouseDown] = useState(false);
 
   useEffect(() => {
@@ -31,20 +39,13 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
 
   const handleCalculatePosition = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
-    if (canvas && canvas.getContext) {
+    if (canvas) {
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      const ctx = canvas.getContext("2d");
-
-      // Get the pixel data
-      const pixelData = ctx?.getImageData(x, y, 1, 1).data;
-      if (!pixelData) return;
-
-      // 3 bytes per pixel
       const position = 3 * (Math.floor(y) * canvas.width + Math.floor(x));
 
-      onPixelClick(position);
+      onPixelClick(position * ratio + jpgHeader);
     }
   };
 
