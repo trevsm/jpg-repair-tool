@@ -1,4 +1,5 @@
 import { fastHexToInt } from "../tools/fastHexToInt";
+import Minimap from "./Minimap";
 
 interface HexGridViewProps {
   hexData: string[];
@@ -89,14 +90,27 @@ export function HexGridView({ hexData, offset }: HexGridViewProps) {
   return (
     <div
       style={{
-        display: "grid",
-        gridTemplateColumns: `80px 24px repeat(${16}, 24px) 24px 150px`,
+        display: "flex",
+        gap: "20px",
+        height: "800px",
+        maxHeight: "800px",
       }}
     >
-      <StickyHeader />
-      <AddressValues />
-      <HexValues />
-      <AsciiValues />
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: `80px 24px repeat(${16}, 24px) 24px 150px`,
+        }}
+      >
+        <StickyHeader />
+        <AddressValues />
+        <HexValues />
+        <AsciiValues />
+      </div>
+      <Minimap
+        position={offset / hexData.length}
+        heightPercentage={(rowCount * 16) / hexData.length}
+      />
     </div>
   );
 }

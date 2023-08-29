@@ -6,8 +6,6 @@ interface ImagePreviewProps {
   hexDataMaxLength: number;
 }
 
-const jpgHeader = 200 * 16;
-
 export const ImagePreview: React.FC<ImagePreviewProps> = ({
   imageSrc,
   onPixelClick,
@@ -16,8 +14,11 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const canvasWidth = 1000;
 
-  const canvasHexMaxLength = 1000 * 748 * 3;
-  const ratio = (hexDataMaxLength - jpgHeader) / canvasHexMaxLength;
+  const canvasHexMaxLength = canvasRef.current
+    ? canvasWidth * canvasRef.current?.height * 3
+    : 0;
+
+  const ratio = hexDataMaxLength / canvasHexMaxLength;
 
   const [mouseDown, setMouseDown] = useState(false);
 
@@ -45,7 +46,7 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
       const y = e.clientY - rect.top;
       const position = 3 * (Math.floor(y) * canvas.width + Math.floor(x));
 
-      onPixelClick(position * ratio + jpgHeader);
+      onPixelClick(position * ratio);
     }
   };
 

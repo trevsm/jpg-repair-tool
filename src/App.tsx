@@ -52,6 +52,7 @@ const App = () => {
 
   useEffect(() => {
     const onScroll = (e: WheelEvent) => {
+      if (!hexData) return;
       if (e.deltaY > 0) {
         setOffset((prevOffset) => prevOffset + 16 * scrollCount);
       } else {
@@ -62,7 +63,7 @@ const App = () => {
     };
     window.addEventListener("wheel", onScroll);
     return () => window.removeEventListener("wheel", onScroll);
-  }, []);
+  }, [hexData]);
 
   return (
     <div className="App">
