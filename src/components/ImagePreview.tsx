@@ -33,7 +33,10 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
         const newHeight = canvasWidth / aspectRatio;
         canvas.width = canvasWidth;
         canvas.height = newHeight;
-        ctx?.drawImage(img, 0, 0, canvasWidth, newHeight);
+        if (ctx) {
+          ctx.imageSmoothingEnabled = false;
+          ctx.drawImage(img, 0, 0, canvasWidth, newHeight);
+        }
       };
     }
   }, [imageSrc]);
