@@ -12,7 +12,6 @@ interface HexGridViewProps {
 export function HexGridView({ hexData, offset, setOffset }: HexGridViewProps) {
   const rowCount = 40;
   const lightText = "#00000030";
-  const lightBg = "#00000015";
 
   const fileOutline = useMemo(
     () =>
@@ -82,30 +81,12 @@ export function HexGridView({ hexData, offset, setOffset }: HexGridViewProps) {
     return hexData.slice(offset, endOffset).map((hex, idx) => {
       const globalIndex = offset + idx;
       const sequenceInfo = getMatchingSequenceInfo(globalIndex);
-
-      const activeBorder = "blue";
       const activeBg = "#8888ff";
-
-      const borderColor = sequenceInfo
-        ? activeBorder
-        : idx % 2 !== 0
-        ? "#fff"
-        : "#eaeaea";
       const backgroundColor = sequenceInfo
         ? activeBg
         : idx % 2 !== 0
         ? "#fff"
         : "#eaeaea";
-      const borderLeftColor = sequenceInfo?.isStart
-        ? activeBorder
-        : sequenceInfo?.isEnd
-        ? activeBg
-        : "white";
-      const borderRightColor = sequenceInfo?.isEnd
-        ? activeBorder
-        : sequenceInfo?.isStart
-        ? activeBg
-        : "white";
 
       return (
         <div
@@ -116,18 +97,7 @@ export function HexGridView({ hexData, offset, setOffset }: HexGridViewProps) {
             gridColumnStart: (idx % 16) + 3,
           }}
         >
-          <div
-            style={{
-              borderTopColor: borderColor,
-              borderBottomColor: borderColor,
-              borderLeftColor: borderLeftColor,
-              borderRightColor: borderRightColor,
-              borderStyle: "solid",
-              borderWidth: "1px",
-            }}
-          >
-            {hex}
-          </div>
+          {hex}
         </div>
       );
     });

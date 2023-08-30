@@ -14,7 +14,7 @@ export default function Minimap({
   setOffset: (offset: number) => void;
 }) {
   const barHeight = heightPercentage * 100 > 0.5 ? heightPercentage * 100 : 0.5;
-  const scale = 100 / (100 + barHeight);
+  const scale = 100 / (100 + barHeight / 2);
   const topPosition = position * scale * 100;
 
   return (

@@ -41,10 +41,14 @@ const App = () => {
     const onScroll = (e: WheelEvent) => {
       if (!hexData) return;
       if (e.deltaY > 0) {
-        setOffset((prevOffset) => prevOffset + 16 * scrollCount);
+        setOffset((prevOffset) =>
+          prevOffset + 16 * scrollCount > hexData.length - 40 * 16
+            ? hexData.length - 40 * 16
+            : prevOffset + 16 * scrollCount
+        );
       } else {
         setOffset((prevOffset) =>
-          prevOffset <= 0 ? 0 : prevOffset - 16 * scrollCount
+          prevOffset - 16 * scrollCount <= 0 ? 0 : prevOffset - 16 * scrollCount
         );
       }
     };
