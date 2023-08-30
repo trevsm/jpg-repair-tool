@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { fastHexToInt } from "../tools/fastHexToInt";
 import Minimap from "./Minimap";
 import { fileFormatCodes } from "../fileFormatCodes";
@@ -8,10 +8,44 @@ interface HexGridViewProps {
   hexData: string[];
   offset: number;
   setOffset: (offset: number) => void;
+  setHexData: (hexData: string[]) => void;
 }
-export function HexGridView({ hexData, offset, setOffset }: HexGridViewProps) {
+
+export function HexGridView({
+  hexData,
+  offset,
+  setOffset,
+  setHexData,
+}: HexGridViewProps) {
   const rowCount = 40;
   const lightText = "#00000030";
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (selectedIndex === null) return;
+
+      if (e.key === "Backspace") {
+        // Remove cell
+        const newHexData = [...hexData];
+        newHexData.splice(selectedIndex, 1);
+        setHexData(newHexData);
+        setSelectedIndex(Math.max(0, selectedIndex - 1));
+      } else if (/^[0-9a-fA-F]$/.test(e.key)) {
+        // Add or modify cell
+        const newHexData = [...hexData];
+        newHexData.splice(selectedIndex, 0, e.key);
+        setHexData(newHexData);
+        setSelectedIndex(selectedIndex + 1);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [hexData, selectedIndex]);
 
   const fileOutline = useMemo(
     () =>
@@ -100,7 +134,10 @@ export function HexGridView({ hexData, offset, setOffset }: HexGridViewProps) {
             color: hex === "00" ? lightText : "#000",
             backgroundColor,
             gridColumnStart: (idx % 16) + 3,
+            outline: selectedIndex === offset + idx ? "2px solid blue" : "none",
           }}
+          tabIndex={0}
+          onFocus={() => setSelectedIndex(offset + idx)}
         >
           {hex}
         </div>

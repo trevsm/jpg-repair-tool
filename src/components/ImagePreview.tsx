@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState } from "react";
+import hexDataToDataURL from "../tools/hexDataToDataURL";
 
 interface ImagePreviewProps {
+  hexData: string[];
   imageSrc: string;
   onPixelClick: (hexPosition: number) => void;
   hexDataMaxLength: number;
 }
 
 export const ImagePreview: React.FC<ImagePreviewProps> = ({
+  hexData,
   imageSrc,
   onPixelClick,
   hexDataMaxLength,
@@ -24,22 +27,25 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (canvas) {
-      const ctx = canvas.getContext("2d");
-      const img = new Image();
-      img.src = imageSrc;
-      img.onload = () => {
-        const aspectRatio = img.width / img.height;
-        const newHeight = canvasWidth / aspectRatio;
-        canvas.width = canvasWidth;
-        canvas.height = newHeight;
-        if (ctx) {
-          ctx.imageSmoothingEnabled = false;
-          ctx.drawImage(img, 0, 0, canvasWidth, newHeight);
-        }
-      };
-    }
-  }, [imageSrc]);
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const dataURL = hexDataToDataURL(hexData);
+    const img = new Image();
+    img.src = dataURL;
+    img.onload = () => {
+      const aspectRatio = img.width / img.height;
+      const newHeight = canvasWidth / aspectRatio;
+      canvas.width = canvasWidth;
+      canvas.height = newHeight;
+
+      ctx.imageSmoothingEnabled = false;
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // clear existing canvas
+      ctx.drawImage(img, 0, 0, canvasWidth, newHeight); // draw new image
+    };
+  }, [hexData]);
 
   const handleCalculatePosition = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;

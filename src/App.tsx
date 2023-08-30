@@ -84,11 +84,13 @@ const App = () => {
             hexData={hexData}
             offset={offset}
             setOffset={handleSetOffset}
+            setHexData={setHexData}
           />
         )}
-        {imageSrc && (
+        {imageSrc && hexData && (
           <ImagePreview
             imageSrc={imageSrc}
+            hexData={hexData}
             onPixelClick={handlePixelClick}
             hexDataMaxLength={hexData?.length || 0}
           />
