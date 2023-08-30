@@ -1,13 +1,28 @@
 import { useEffect, useState } from "react";
-import { HexGridView } from "./components/HexGridView";
+import { HexGridView, rowCount } from "./components/HexGridView";
 import { FileUploader } from "./components/FileUploader";
 import { ImagePreview } from "./components/ImagePreview";
+import { get16 } from "./tools/misc";
 import "./App.css";
 
 export const scrollCount = 5;
 
+const magicNumbers = {
+  jpeg: ["ff", "d8", "ff"],
+  png: ["89", "50", "4e", "47"],
+};
+
+const identifyFileType = (hexArray: string[]) => {
+  for (const [type, signature] of Object.entries(magicNumbers)) {
+    if (signature.every((byte, index) => hexArray[index] === byte)) {
+      return type;
+    }
+  }
+  return "unknown";
+};
+
 const App = () => {
-  const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [fileType, setFileType] = useState<string | null>(null);
   const [hexData, setHexData] = useState<string[] | null>(null);
   const [offset, setOffset] = useState(0);
 
@@ -23,19 +38,14 @@ const App = () => {
         newOffset = setter;
       }
 
-      newOffset = Math.floor(newOffset / 16) * 16;
+      newOffset = get16(newOffset);
+      const maxOffset = get16(hexData.length) - rowCount * 16;
 
-      return Math.max(0, Math.min(newOffset, hexData.length - 40 * 16));
+      return Math.max(0, Math.min(newOffset, maxOffset));
     });
   };
 
   const handleFile = (file: File) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImageSrc(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-
     const hexReader = new FileReader();
     hexReader.onloadend = (e) => {
       if (e.target?.result) {
@@ -44,15 +54,13 @@ const App = () => {
         const hexArray = Array.from(new Uint8Array(buffer)).map((byte) =>
           byte.toString(16).padStart(2, "0")
         );
+        const identifiedType = identifyFileType(hexArray);
+
+        setFileType(identifiedType);
         setHexData(hexArray);
       }
     };
     hexReader.readAsArrayBuffer(file);
-  };
-
-  const handlePixelClick = (hexPosition: number) => {
-    const row = Math.floor(hexPosition / 16) * 16;
-    setOffset(row);
   };
 
   useEffect(() => {
@@ -85,13 +93,13 @@ const App = () => {
             offset={offset}
             setOffset={handleSetOffset}
             setHexData={setHexData}
+            fileType={fileType || ""}
           />
         )}
-        {imageSrc && hexData && (
+        {hexData && (
           <ImagePreview
-            imageSrc={imageSrc}
             hexData={hexData}
-            onPixelClick={handlePixelClick}
+            onPixelClick={handleSetOffset}
             hexDataMaxLength={hexData?.length || 0}
           />
         )}

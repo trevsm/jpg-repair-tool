@@ -3,14 +3,12 @@ import hexDataToDataURL from "../tools/hexDataToDataURL";
 
 interface ImagePreviewProps {
   hexData: string[];
-  imageSrc: string;
   onPixelClick: (hexPosition: number) => void;
   hexDataMaxLength: number;
 }
 
 export const ImagePreview: React.FC<ImagePreviewProps> = ({
   hexData,
-  imageSrc,
   onPixelClick,
   hexDataMaxLength,
 }) => {
@@ -53,7 +51,7 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      const position = 3 * (Math.floor(y) * canvas.width + Math.floor(x));
+      const position = 3 * (Math.ceil(y) * canvas.width + Math.ceil(x));
 
       onPixelClick(position * ratio);
     }
