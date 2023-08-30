@@ -1,4 +1,11 @@
-export const fileFormatCodes = [
+export const fileFormatCodes: {
+  types: string[];
+  codes: {
+    title: string;
+    match: string[];
+    highlightOnly?: boolean;
+  }[];
+}[] = [
   {
     types: ["jpg", "jpeg"],
     codes: [
@@ -29,6 +36,11 @@ export const fileFormatCodes = [
       {
         title: "End of image",
         match: ["ff", "d9"],
+      },
+      {
+        title: "Comment",
+        match: ["ff", "00"],
+        highlightOnly: true,
       },
     ],
   },

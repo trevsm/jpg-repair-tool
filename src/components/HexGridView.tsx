@@ -53,17 +53,22 @@ export function HexGridView({
         .find((fileFormat) => fileFormat.types.includes("jpg"))
         ?.codes.map((code) => ({
           title: code.title + `[${code.match.join("")}]`,
-          indexes: getIndex(hexData, code.match),
+          indexes: {
+            values: getIndex(hexData, code.match),
+            highlightOnly: code?.highlightOnly,
+          },
+          match: code.match,
         })),
     [hexData]
   );
 
   const blocklines = fileOutline
     ?.flatMap(({ title, indexes }) =>
-      indexes.map((index) => ({
+      indexes.values.map((index) => ({
         label: title,
         position: index / hexData.length,
         realOffset: index,
+        highlightOnly: indexes.highlightOnly,
       }))
     )
     .sort((a, b) => a.position - b.position);
@@ -103,13 +108,13 @@ export function HexGridView({
     const endOffset = offset + rowCount * 16;
 
     const getMatchingSequenceInfo = (globalIndex: number) => {
-      for (const { indexes } of fileOutline ?? []) {
-        for (const index of indexes) {
-          if (globalIndex >= index && globalIndex < index + 2) {
-            // Adjust the length based on the match length
+      for (const { indexes, match } of fileOutline ?? []) {
+        const matchLength = match.length;
+        for (const index of indexes.values) {
+          if (globalIndex >= index && globalIndex < index + matchLength) {
             return {
               isStart: globalIndex === index,
-              isEnd: globalIndex === index + 1, // Adjust based on the match length
+              isEnd: globalIndex === index + matchLength - 1,
             };
           }
         }

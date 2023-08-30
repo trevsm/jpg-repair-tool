@@ -5,6 +5,7 @@ interface MinimapProps {
     label: string;
     position: number; // 0 - 1
     realOffset: number;
+    highlightOnly?: boolean;
   }[];
   setOffset: (offset: number) => void;
 }
@@ -27,8 +28,9 @@ export default function Minimap({
   const lines: any[] = [];
 
   if (blocklines) {
-    blocklines.forEach(({ label, position, realOffset }) => {
+    blocklines.forEach(({ label, position, realOffset, highlightOnly }) => {
       const topPosition = position * 100;
+      if (highlightOnly) return;
 
       // For rendering individual lines
       lines.push({ position: topPosition });
