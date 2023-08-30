@@ -56,7 +56,10 @@ export function HexGridView({ hexData, offset, setOffset }: HexGridViewProps) {
           gridRowStart: rowIndex + 2,
         }}
       >
-        {(offset / 16 + rowIndex).toString(16).padStart(8, "0").toUpperCase()}
+        {(Math.floor(offset / 16) + rowIndex)
+          .toString(16)
+          .padStart(8, "0")
+          .toUpperCase()}
       </div>
     ));
 

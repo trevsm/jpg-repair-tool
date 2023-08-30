@@ -11,6 +11,22 @@ const App = () => {
   const [hexData, setHexData] = useState<string[] | null>(null);
   const [offset, setOffset] = useState(0);
 
+  const handleSetOffset = (setter: number | ((prev: number) => number)) => {
+    setOffset((prevOffset) => {
+      if (!hexData) return 0;
+
+      let newOffset: number;
+
+      if (typeof setter === "function") {
+        newOffset = setter(prevOffset);
+      } else {
+        newOffset = setter;
+      }
+
+      return Math.max(0, Math.min(newOffset, hexData.length - 40 * 16));
+    });
+  };
+
   const handleFile = (file: File) => {
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -41,15 +57,9 @@ const App = () => {
     const onScroll = (e: WheelEvent) => {
       if (!hexData) return;
       if (e.deltaY > 0) {
-        setOffset((prevOffset) =>
-          prevOffset + 16 * scrollCount > hexData.length - 40 * 16
-            ? hexData.length - 40 * 16
-            : prevOffset + 16 * scrollCount
-        );
+        handleSetOffset((prevOffset) => prevOffset + 16 * scrollCount);
       } else {
-        setOffset((prevOffset) =>
-          prevOffset - 16 * scrollCount <= 0 ? 0 : prevOffset - 16 * scrollCount
-        );
+        handleSetOffset((prevOffset) => prevOffset - 16 * scrollCount);
       }
     };
     window.addEventListener("wheel", onScroll);
@@ -71,7 +81,7 @@ const App = () => {
           <HexGridView
             hexData={hexData}
             offset={offset}
-            setOffset={setOffset}
+            setOffset={handleSetOffset}
           />
         )}
         {imageSrc && (
