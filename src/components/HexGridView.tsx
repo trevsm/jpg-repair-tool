@@ -20,23 +20,46 @@ export function HexGridView({
   const rowCount = 40;
   const lightText = "#00000030";
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [hexDataHistory, setHexDataHistory] = useState<string[][]>([]);
 
   useEffect(() => {
+    let tempChar = ""; // temporary character to hold the first half of the byte
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (selectedIndex === null) return;
 
+      let newHexData = [...hexData]; // make a copy of current hexData
+
+      if (e.ctrlKey && e.key === "z") {
+        // Ctrl-Z for undo
+        const lastHistory = hexDataHistory.pop();
+        if (lastHistory) {
+          newHexData = lastHistory;
+          setHexData(newHexData);
+          setSelectedIndex(Math.max(0, selectedIndex + 1));
+        }
+        return;
+      }
+
       if (e.key === "Backspace") {
         // Remove cell
-        const newHexData = [...hexData];
-        newHexData.splice(selectedIndex, 1);
+        newHexData.splice(selectedIndex - 1, 1);
+        setHexDataHistory([...hexDataHistory, [...hexData]]); // update history before change
         setHexData(newHexData);
         setSelectedIndex(Math.max(0, selectedIndex - 1));
+        tempChar = ""; // clear the temporary character
       } else if (/^[0-9a-fA-F]$/.test(e.key)) {
-        // Add or modify cell
-        const newHexData = [...hexData];
-        newHexData.splice(selectedIndex, 0, e.key);
-        setHexData(newHexData);
-        setSelectedIndex(selectedIndex + 1);
+        if (tempChar === "") {
+          // If tempChar is empty, this is the first character of the byte
+          tempChar = e.key;
+        } else {
+          // Add or modify cell
+          newHexData.splice(selectedIndex, 0, tempChar + e.key);
+          setHexDataHistory([...hexDataHistory, [...hexData]]); // update history before change
+          setHexData(newHexData);
+          setSelectedIndex(selectedIndex + 1);
+          tempChar = ""; // clear the temporary character
+        }
       }
     };
 
@@ -45,7 +68,7 @@ export function HexGridView({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [hexData, selectedIndex]);
+  }, [hexData, hexDataHistory, selectedIndex]);
 
   const fileOutline = useMemo(
     () =>

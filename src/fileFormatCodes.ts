@@ -38,9 +38,9 @@ export const fileFormatCodes: {
         match: ["ff", "d9"],
       },
       {
-        title: "Comment",
-        match: ["ff", "00"],
-        highlightOnly: true,
+        title: "Bad Escape",
+        match: ["ff", "!00"],
+        // highlightOnly: true,
       },
     ],
   },
