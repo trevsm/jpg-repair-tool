@@ -23,6 +23,8 @@ const App = () => {
         newOffset = setter;
       }
 
+      newOffset = Math.floor(newOffset / 16) * 16;
+
       return Math.max(0, Math.min(newOffset, hexData.length - 40 * 16));
     });
   };

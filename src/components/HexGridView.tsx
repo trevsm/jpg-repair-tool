@@ -18,19 +18,21 @@ export function HexGridView({ hexData, offset, setOffset }: HexGridViewProps) {
       fileFormatCodes
         .find((fileFormat) => fileFormat.types.includes("jpg"))
         ?.codes.map((code) => ({
-          title: code.title,
+          title: code.title + `[${code.match.join("")}]`,
           indexes: getIndex(hexData, code.match),
         })),
     [hexData]
   );
 
-  const blocklines = fileOutline?.flatMap(({ title, indexes }) =>
-    indexes.map((index) => ({
-      label: title,
-      position: index / hexData.length,
-      realOffset: index,
-    }))
-  );
+  const blocklines = fileOutline
+    ?.flatMap(({ title, indexes }) =>
+      indexes.map((index) => ({
+        label: title,
+        position: index / hexData.length,
+        realOffset: index,
+      }))
+    )
+    .sort((a, b) => a.position - b.position);
 
   const StickyHeader = () => (
     <>
